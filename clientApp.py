@@ -28,7 +28,7 @@ def homepage():
 @app.route("/predict", methods=['POST'])
 @cross_origin()
 def predictRoute():
-    # try:
+    try:
         if request.method == 'POST':  
             f = request.files['file']
             filepath=os.path.join('static','images',f.filename)
@@ -58,16 +58,12 @@ def predictRoute():
                 info={"Name":Name,"Address":Address,"State":State,"Licence_no":Licence_no,"Validity":Validity}
             
             return render_template("prediction.html",info=info,len=len(info),img=filepath)
-    # except FileNotFoundError as e:  
-    #     flash("please upload a file " )
-    #     return render_template("index.html")
-    # except Exception as e:
-    #     flash("something went wrong :- " +str(e)[0:30])
-    #     return render_template("index.html")
-    # image = request.json['image']
-    # decodeImage(image, clApp.filename)
-    # result = clApp.objectDetection.getPrediction()
-    # return jsonify({"result" : result})
+    except FileNotFoundError as e:  
+        flash("please upload a file " )
+        return render_template("index.html")
+    except Exception as e:
+        flash("something went wrong :- " +str(e)[0:30])
+        return render_template("index.html")
 
 
 #port = int(os.getenv("PORT"))
