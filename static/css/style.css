@@ -1,0 +1,24 @@
+body {
+    background-color: white;
+    text-align: center;
+}
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 10%;
+}
+th:tr{
+    color: rgb(214, 214, 221);
+
+}
+tr:nth-of-type(2n){
+    border: 1px solid black;
+    background-color: rgba(63, 149, 86, 0.595);
+
+}
+
+td{
+    padding: 8px 8px;
+    border: 1px solid black;
+}
