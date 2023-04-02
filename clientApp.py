@@ -28,7 +28,7 @@ def homepage():
 @app.route("/predict", methods=['POST'])
 @cross_origin()
 def predictRoute():
-    try:
+    # try:
         if request.method == 'POST':  
             f = request.files['file']
             filepath=os.path.join('static','images',f.filename)
@@ -36,32 +36,34 @@ def predictRoute():
             image=encodeImageIntoBase64(filepath)
             decodeImage(image, clApp.filename)
             result = clApp.objectDetection.getPrediction()
+            Licence_no =" ".join(re.findall("[A-Z]{2}[0-9]{2} [0-9]{11}",result))
             x=result.strip().split("\n")
             x=[i for i in x if re.search("[a-zA-Z]",i)]
-            if("DRIVING LICENCE" not in result):
+            State=Licence_no[:2]
+            Name=''
+            Address=''
+            if("DL No" not in result):
                 enum=enumerate(x)
                 info=dict((i,j) for i,j in enum)
             else:
                 for i in range(len(x)):
                     if 'STATE' in x[i]:
                         State=x[i][:-3]
-                    if 'DL No' in x[i]:
-                        Licence_no =re.findall("[A-Z]{2}[1-9]{2} [0-9]{11}",x[i])[0]
                     if "Valid" in x[i]:
                         Validity=re.findall("[0-9]{2}\-[0-9]{2}\-[0-9]{4}",x[i])[0]
                     if "Name" in x[i]:
-                        Name=re.findall("[A-Z]+ [A-Z]+",x[i])[0]
+                        Name=" ".join(re.findall("[A-Z]+",x[i])[1:])
                     if 'Add' in x[i]:
                         Address=",".join([x[i],x[i+1],x[i+2]])[6:]
                 info={"Name":Name,"Address":Address,"State":State,"Licence_no":Licence_no,"Validity":Validity}
             
             return render_template("prediction.html",info=info,len=len(info),img=filepath)
-    except FileNotFoundError as e:  
-        flash("please upload a file " )
-        return render_template("index.html")
-    except Exception as e:
-        flash("something went wrong :- " +str(e)[0:-30])
-        return render_template("index.html")
+    # except FileNotFoundError as e:  
+    #     flash("please upload a file " )
+    #     return render_template("index.html")
+    # except Exception as e:
+    #     flash("something went wrong :- " +str(e)[0:30])
+    #     return render_template("index.html")
     # image = request.json['image']
     # decodeImage(image, clApp.filename)
     # result = clApp.objectDetection.getPrediction()
@@ -71,4 +73,4 @@ def predictRoute():
 #port = int(os.getenv("PORT"))
 if __name__ == "__main__":
     clApp = ClientApp()
-    app.run(host='0.0.0.0', debug=False)
+    app.run(host='127.0.0.1', port=7000, debug=True)
